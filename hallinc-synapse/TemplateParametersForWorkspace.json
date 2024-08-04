@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "hallinc-synapse"
+		},
+		"HallincCosmosDB_connectionString": {
+			"value": ""
+		},
+		"hallinc-synapse-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:hallinc-synapse.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"Sql Serverless_properties_typeProperties_server": {
+			"value": "hallinc-synapse-ondemand.sql.azuresynapse.net"
+		},
+		"Sql Serverless_properties_typeProperties_database": {
+			"value": "Sales"
+		},
+		"hallinc-synapse-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://hallincdatalake.dfs.core.windows.net"
+		},
+		"world_wide_importers_properties_typeProperties_server": {
+			"value": "hallinc-sql-server.database.windows.net"
+		},
+		"world_wide_importers_properties_typeProperties_database": {
+			"value": "WWIDB"
+		}
+	}
+}

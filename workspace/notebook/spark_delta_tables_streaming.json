@@ -1,0 +1,323 @@
+{
+	"name": "spark_delta_tables_streaming",
+	"properties": {
+		"folder": {
+			"name": "notebooks"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "hallincspark",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 1,
+			"runAsWorkspaceSystemIdentity": true,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "1",
+				"spark.autotune.trackingId": "d0f5d1a2-2833-4c12-bb18-869f1b8709b1"
+			}
+		},
+		"metadata": {
+			"saveOutput": false,
+			"enableDebugMode": false,
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/a011ea95-c1fe-4125-9cef-82abcac7f740/resourceGroups/hallinc-rg/providers/Microsoft.Synapse/workspaces/hallinc-synapse/bigDataPools/hallincspark",
+				"name": "hallincspark",
+				"type": "Spark",
+				"endpoint": "https://hallinc-synapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/hallincspark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 15
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"<b> Structured Streaming<b>"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"from pyspark.sql.types import *\r\n",
+					"from pyspark.sql.functions import *\r\n",
+					"\r\n",
+					"spark.sql(\"DROP TABLE IF EXISTS orders_stream\")\r\n",
+					"\r\n",
+					"# create schema\r\n",
+					"schema = StructType([\r\n",
+					"    StructField('ProductID', StringType(), True),\r\n",
+					"    StructField('ProductName', StringType(), True),\r\n",
+					"    StructField('Category', StringType(), True),\r\n",
+					"    StructField('ListPrice', StringType(), True)\r\n",
+					"])\r\n",
+					"\r\n",
+					"# create empty dataframe\r\n",
+					"df = spark.createDataFrame(\r\n",
+					"    [],\r\n",
+					"    schema=schema\r\n",
+					")\r\n",
+					"\r\n",
+					"path = 'abfss://hallinc@hallincdatalake.dfs.core.windows.net/delta/orders/'\r\n",
+					"\r\n",
+					"# create empty delta table\r\n",
+					"df.write \\\r\n",
+					"    .format(\"delta\") \\\r\n",
+					"    .option(\"path\", path) \\\r\n",
+					"    .saveAsTable(\"orders_stream\")"
+				],
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# Load a streaming dataframe from the Delta Table\r\n",
+					"\r\n",
+					"path = 'abfss://hallinc@hallincdatalake.dfs.core.windows.net/delta/orders/'\r\n",
+					"\r\n",
+					"stream_df = spark.readStream.format(\"delta\") \\\r\n",
+					"    .option(\"ignoreChanges\", \"true\") \\\r\n",
+					"    .load(path)\r\n",
+					"\r\n",
+					"# process the streaming data in the dataframe\r\n",
+					"stream_df.writeStream \\\r\n",
+					"    .outputMode(\"append\") \\\r\n",
+					"    .format(\"console\") \\\r\n",
+					"    .start()"
+				],
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"stream_df.writeStream\\\r\n",
+					"    .format(\"memory\")\\\r\n",
+					"    .queryName(\"stream_table\")\\\r\n",
+					"    .trigger(processingTime='5 seconds')\\\r\n",
+					"    .start()\\\r\n",
+					"    .awaitTermination(60)"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"# append a row\r\n",
+					"\r\n",
+					"new_row = spark.createDataFrame([\r\n",
+					"    Row(\r\n",
+					"        ProductID=\"008\",\r\n",
+					"        ProductName=\"Product C\",\r\n",
+					"        Category=\"Category1\",\r\n",
+					"        ListPrice=\"70.00\"\r\n",
+					"    )\r\n",
+					"])\r\n",
+					"df = df.union(new_row)\r\n",
+					"\r\n",
+					"df.write \\\r\n",
+					"    .format(\"delta\") \\\r\n",
+					"    .mode(\"append\") \\\r\n",
+					"    .saveAsTable(\"orders_stream\")\r\n",
+					"\r\n",
+					"df.write \\\r\n",
+					"    .format(\"delta\") \\\r\n",
+					"    .mode(\"append\") \\\r\n",
+					"    .saveAsTable(\"orders_stream\")"
+				],
+				"execution_count": 21
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": true
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"SELECT * FROM stream_table;"
+				],
+				"execution_count": 22
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# streaming sink\r\n",
+					"\r\n",
+					"from pyspark.sql.types import *\r\n",
+					"from pyspark.sql.functions import *\r\n",
+					"\r\n",
+					"path = 'abfss://hallinc@hallincdatalake.dfs.core.windows.net/streaming_data/'\r\n",
+					"\r\n",
+					"# stream that reads JSON data from a folder\r\n",
+					"inputPath = path\r\n",
+					"jsonSchema = StructType([\r\n",
+					"    StructField(\"device\", StringType(), False),\r\n",
+					"    StructField(\"status\", StringType(), False)\r\n",
+					"])\r\n",
+					"stream_df = spark.readStream \\\r\n",
+					"    .schema(jsonSchema) \\\r\n",
+					"    .option(\"maxFilesPerTrigger\", 1) \\\r\n",
+					"    .json(inputPath)\r\n",
+					"\r\n",
+					"# Write the stream to a delta table\r\n",
+					"table_path = '/delta/devicetable'\r\n",
+					"checkpoint_path = '/delta/checkpoint'\r\n",
+					"delta_stream = stream_df.writeStream \\\r\n",
+					"    .format(\"delta\") \\\r\n",
+					"    .option(\"checkpointLocation\", checkpoint_path) \\\r\n",
+					"    .start(table_path)"
+				],
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": true
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"\r\n",
+					"CREATE TABLE DeviceTable\r\n",
+					"USING DELTA\r\n",
+					"LOCATION '/delta/devicetable';"
+				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"SELECT *\r\n",
+					"FROM DeviceTable;"
+				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"delta_stream.stop()"
+				],
+				"execution_count": 3
+			}
+		]
+	}
+}

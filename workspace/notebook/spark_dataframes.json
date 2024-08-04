@@ -1,0 +1,321 @@
+{
+	"name": "spark_dataframes",
+	"properties": {
+		"folder": {
+			"name": "notebooks"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "hallincspark",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 1,
+			"runAsWorkspaceSystemIdentity": true,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "true",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "1",
+				"spark.autotune.trackingId": "6a7fe71f-6249-478d-88be-c363d14154d3"
+			}
+		},
+		"metadata": {
+			"saveOutput": false,
+			"enableDebugMode": false,
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/a011ea95-c1fe-4125-9cef-82abcac7f740/resourceGroups/hallinc-rg/providers/Microsoft.Synapse/workspaces/hallinc-synapse/bigDataPools/hallincspark",
+				"name": "hallincspark",
+				"type": "Spark",
+				"endpoint": "https://hallinc-synapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/hallincspark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 15
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"**Transform with Pyspark**"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"order_details = spark.read.csv('abfss://hallinc@hallincdatalake.dfs.core.windows.net/raw/sales/csv/*.csv', header=True, inferSchema=True)\r\n",
+					"display(order_details.limit(5))"
+				],
+				"execution_count": 2
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"# split columns\r\n",
+					"\r\n",
+					"from pyspark.sql.functions import split, col\r\n",
+					"\r\n",
+					"# Create FirstName and LastName columns\r\n",
+					"transformed_df = order_details \\\r\n",
+					"    .withColumn(\"FirstName\", split(col(\"CustomerName\"), \" \").getItem(0)) \\\r\n",
+					"    .withColumn(\"LastName\", split(col(\"CustomerName\"), \" \").getItem(1))\r\n",
+					"\r\n",
+					"# Remove the CustomerName field\r\n",
+					"transformed_df = transformed_df.drop(\"CustomerName\")"
+				],
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# write to parquet\r\n",
+					"path = 'abfss://hallinc@hallincdatalake.dfs.core.windows.net/raw/parquet/products/orders'\r\n",
+					"\r\n",
+					"transformed_df.write \\\r\n",
+					"    .mode(\"overwrite\") \\\r\n",
+					"    .parquet(path)\r\n",
+					"print (f\"data saved to {path}.\")"
+				],
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# add year partitioning\r\n",
+					"\r\n",
+					"from pyspark.sql.functions import year, col\r\n",
+					"\r\n",
+					"# Add derived 'Year' column\r\n",
+					"dated_df = transformed_df.withColumn(\"Year\", year(col(\"OrderDate\")))\r\n",
+					"\r\n",
+					"# Partition by year\r\n",
+					"dated_df.write \\\r\n",
+					"    .partitionBy(\"Year\") \\\r\n",
+					"    .mode(\"overwrite\") \\\r\n",
+					"    .parquet(path=path)\r\n",
+					"    \r\n",
+					"[file.name for file in mssparkutils.fs.ls(path)]"
+				],
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": true
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"display(spark.read.parquet(f'{path}/Year=2020').limit(3))"
+				],
+				"execution_count": 9
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"**Transform with pyspark.sql**"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# create persistent external table from original order_details\r\n",
+					"\r\n",
+					"path = 'abfss://hallinc@hallincdatalake.dfs.core.windows.net/raw/parquet/products/orders_table'\r\n",
+					"order_details.write.saveAsTable('sales_orders', format='parquet', mode='overwrite', path=path)"
+				],
+				"execution_count": 10
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# transform the table\r\n",
+					"\r\n",
+					"path='abfss://hallinc@hallincdatalake.dfs.core.windows.net/raw/parquet/products/order_table_transformed'\r\n",
+					"\r\n",
+					"# Create derived columns into existing table\r\n",
+					"sql_transform = spark.sql(\r\n",
+					"    \"SELECT *, YEAR(OrderDate) AS Year, MONTH(OrderDate) AS Month \\\r\n",
+					"    FROM sales_orders\"\r\n",
+					")\r\n",
+					"\r\n",
+					"# Save the results as transformed table\r\n",
+					"sql_transform.write \\\r\n",
+					"    .partitionBy(\"Year\",\"Month\") \\\r\n",
+					"    .saveAsTable(\r\n",
+					"        'transformed_orders',\r\n",
+					"        format='parquet',\r\n",
+					"        mode='overwrite',\r\n",
+					"        path=path\r\n",
+					"    )"
+				],
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"[file.name for file in mssparkutils.fs.ls(path)]"
+				],
+				"execution_count": 12
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": true
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"\r\n",
+					"-- query table from metastore\r\n",
+					"SELECT * FROM transformed_orders\r\n",
+					"WHERE Year = 2021\r\n",
+					"    AND Month = 1"
+				],
+				"execution_count": 14
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"\r\n",
+					"DROP TABLE transformed_orders;\r\n",
+					"DROP TABLE sales_orders;"
+				],
+				"execution_count": 15
+			}
+		]
+	}
+}

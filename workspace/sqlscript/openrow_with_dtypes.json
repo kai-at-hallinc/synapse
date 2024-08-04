@@ -1,0 +1,20 @@
+{
+	"name": "openrow_with_dtypes",
+	"properties": {
+		"folder": {
+			"name": "sql"
+		},
+		"content": {
+			"query": "SELECT TOP 100 *\nFROM OPENROWSET(\n    BULK 'https://hallincdatalake.dfs.core.windows.net/hallinc/raw/csv/products/products2.csv',\n    FORMAT = 'csv',\n    PARSER_VERSION = '2.0')\nWITH (\n    product_id INT,\n    product_name VARCHAR(20) COLLATE Latin1_General_100_BIN2_UTF8,\n    list_price DECIMAL(5,2)\n) AS rows\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "MyBase",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

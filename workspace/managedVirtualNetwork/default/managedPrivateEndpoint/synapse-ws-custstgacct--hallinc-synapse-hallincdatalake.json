@@ -1,0 +1,10 @@
+{
+	"name": "synapse-ws-custstgacct--hallinc-synapse-hallincdatalake",
+	"properties": {
+		"privateLinkResourceId": "/subscriptions/a011ea95-c1fe-4125-9cef-82abcac7f740/resourceGroups/hallinc-rg/providers/Microsoft.Storage/storageAccounts/hallincdatalake",
+		"groupId": "dfs",
+		"fqdns": [
+			"hallincdatalake.dfs.core.windows.net"
+		]
+	}
+}

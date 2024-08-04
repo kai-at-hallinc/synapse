@@ -1,0 +1,19 @@
+{
+	"name": "Sales_Accessories",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "hallinc-synapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "raw/sales/special_orders/accessories",
+				"fileSystem": "hallinc"
+			}
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

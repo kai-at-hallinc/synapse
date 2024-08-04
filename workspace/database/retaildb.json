@@ -1,0 +1,26 @@
+{
+	"name": "retaildb",
+	"properties": {
+		"Name": "retaildb",
+		"EntityType": "DATABASE",
+		"Origin": {
+			"Type": "SPARK"
+		},
+		"Properties": {
+			"IsSyMSCDMDatabase": true,
+			"DerivedModelDBInfo": "{\"ModelDirectives\":{\"BaseModel\":{\"Name\":\"Retail\",\"Version\":\"1.3.0\"}}}"
+		},
+		"Source": {
+			"Provider": "ADLS",
+			"Location": "abfss://hallinc@hallincdatalake.dfs.core.windows.net/retaildb",
+			"Properties": {
+				"FormatType": "csv",
+				"LinkedServiceName": "hallinc-synapse-WorkspaceDefaultStorage"
+			}
+		},
+		"PublishStatus": "PUBLISHED",
+		"ObjectVersion": 4,
+		"ObjectId": "c408fd3f-1c80-405e-aef2-bd04cb379f68"
+	},
+	"type": "DATABASE"
+}

@@ -1,0 +1,20 @@
+{
+	"name": "sql_read_from_delta",
+	"properties": {
+		"folder": {
+			"name": "sql"
+		},
+		"content": {
+			"query": "SELECT *\nFROM\n    OPENROWSET(\n        BULK 'abfss://hallinc@hallincdatalake.dfs.core.windows.net/delta/orders/',\n        FORMAT = 'DELTA'\n    ) AS deltadata;\n\nCREATE DATABASE StreamDB\n      COLLATE Latin1_General_100_BIN2_UTF8;\nGO;\n\nUSE StreamDB;\nGO\n\nCREATE EXTERNAL DATA SOURCE DeltaLakeStore\nWITH\n(\n    LOCATION = 'abfss://hallinc@hallincdatalake.dfs.core.windows.net/delta/'\n);\nGO\n\nSELECT TOP 10 *\nFROM OPENROWSET(\n        BULK '/orders',\n        DATA_SOURCE = 'DeltaLakeStore',\n        FORMAT = 'DELTA'\n    ) as deltadata;\n\n--query catalog tables created in spark\n\nSELECT * FROM managedproducts\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "default",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

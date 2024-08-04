@@ -1,0 +1,20 @@
+{
+	"name": "database_permissions",
+	"properties": {
+		"folder": {
+			"name": "sql"
+		},
+		"content": {
+			"query": "use master\nCREATE LOGIN [kai@hallinc.onmicrosoft.com] FROM EXTERNAL PROVIDER;\n\nuse Sales -- chosen DB name\nCREATE USER kai FROM LOGIN [kai@hallinc.onmicrosoft.com];\n\nuse Sales -- Use your DB name\nalter role db_datareader \nAdd member kai\n\n\nCREATE LOGIN [kai@hallinc.onmicrosoft.com] FROM EXTERNAL PROVIDER;\nALTER SERVER ROLE sysadmin ADD MEMBER [kai@hallinc.onmicrosoft.com];",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "Sales",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

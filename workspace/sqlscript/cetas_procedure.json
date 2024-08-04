@@ -1,0 +1,20 @@
+{
+	"name": "cetas_procedure",
+	"properties": {
+		"folder": {
+			"name": "sql"
+		},
+		"content": {
+			"query": "CREATE PROCEDURE usp_accessories \n    @order_year INT\nAS\nBEGIN\n\n    -- drop table if exists\n    IF EXISTS (\n        SELECT * FROM sys.external_tables\n        WHERE name = 'Accessories'\n    ) \n    DROP EXTERNAL TABLE Accessories\n\n    -- Create external table with orderlinenumber\n\t-- from specified year\n\tCREATE EXTERNAL TABLE Accessories\n\t\tWITH (\n\t\t\tLOCATION = 'special_orders/accessories',\n\t\t\tDATA_SOURCE = sales_files,\n\t\t\tFILE_FORMAT = ParquetFormat\n\t\t)\n\tAS\n\tSELECT SalesOrderNumber, CustomerName, Quantity\n\tFROM\n\t\tOPENROWSET(\n            BULK '*.csv',\n            DATA_SOURCE = 'sales_data',\n            FORMAT = 'CSV',\n            PARSER_VERSION = '2.0',\n            HEADER_ROW = TRUE\n\t\t) AS source_data\n\tWHERE SalesOrderLineNumber = 3\n\tAND YEAR(OrderDate) = @order_year\nEND\n\n-- execute procedure\nEXEC usp_accessories 2021;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "Sales",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

@@ -1,0 +1,10 @@
+{
+	"name": "synapse-ws-sql--hallinc-synapse",
+	"properties": {
+		"privateLinkResourceId": "/subscriptions/a011ea95-c1fe-4125-9cef-82abcac7f740/resourceGroups/hallinc-rg/providers/Microsoft.Synapse/workspaces/hallinc-synapse",
+		"groupId": "sql",
+		"fqdns": [
+			"hallinc-synapse.e6ccbef2-9136-4d19-886a-6c98a1efff49.sql.azuresynapse.net"
+		]
+	}
+}

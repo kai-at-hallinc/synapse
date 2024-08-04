@@ -1,0 +1,20 @@
+{
+	"name": "openrow_ext_datasource",
+	"properties": {
+		"folder": {
+			"name": "sql"
+		},
+		"content": {
+			"query": "CREATE EXTERNAL DATA SOURCE flights\nWITH (\n    LOCATION = 'abfss://hallinc@hallincdatalake.dfs.core.windows.net/raw/flights/parquet/'\n);\n\nSELECT *\nFROM\n    OPENROWSET(\n        BULK 'Year=2013/Month=*/DayofMonth=*/*.parquet',\n        DATA_SOURCE = 'flights',\n        FORMAT = 'parquet'  \n    ) AS flights\nWHERE \n    flights.filepath(1) = '10'\n;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "FlightDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

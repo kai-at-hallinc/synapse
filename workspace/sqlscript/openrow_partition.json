@@ -1,0 +1,20 @@
+{
+	"name": "openrow_partition",
+	"properties": {
+		"folder": {
+			"name": "sql"
+		},
+		"content": {
+			"query": "SELECT\n    Carrier,\n    COUNT(CAST(DepDelay AS INT)) AS Delay,\n    SUM(CAST(DepDel15 AS INT)) AS Delay15\n\nFROM OPENROWSET(\n    BULK 'abfss://hallinc@hallincdatalake.dfs.core.windows.net/raw/flights/parquet/Year=*/Month=*/DayofMonth=*/*.parquet',\n    FORMAT = 'parquet'\n    ) AS flights\nWHERE \n    flights.filepath(1) = '2013' AND \n    flights.filepath(2) = '5' AND\n    flights.filepath(3) = '19'\nGROUP BY Carrier\n;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "MyBase",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

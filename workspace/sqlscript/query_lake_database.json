@@ -1,0 +1,20 @@
+{
+	"name": "query_lake_database",
+	"properties": {
+		"folder": {
+			"name": "sql"
+		},
+		"content": {
+			"query": " SELECT \n    o.SalesOrderID,\n    c.EmailAddress,\n    p.ProductName,\n    o.Quantity\n FROM \n    SalesOrder AS o\n JOIN \n    Customer AS c ON o.CustomerId = c.CustomerId\n JOIN \n    Product AS p ON o.ProductId = p.ProductId;\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "retaildb",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

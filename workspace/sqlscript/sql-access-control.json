@@ -1,0 +1,20 @@
+{
+	"name": "sql-access-control",
+	"properties": {
+		"folder": {
+			"name": "sql"
+		},
+		"content": {
+			"query": "-- create table\nCREATE TABLE Membership\n(\n    MemberID int IDENTITY,\n    FirstName varchar(100) NULL,\n    SSN char(9) NOT NULL,\n    LastName varchar(100) NOT NULL,\n    Phone varchar(12) NULL,\n    Email varchar(100) NULL\n);\nGO\n\nCREATE LOGIN testuser WITH PASSWORD = '';\nCREATE USER testuser FOR LOGIN [testuser];\n\n--grant select all but sales\nGRANT SELECT ON Membership (MemberID, FirstName, LastName, Phone, Email) TO TestUser;\n\nSELECT * FROM Membership;\n-- Msg 230, Level 14, State 1, Line 1\n-- The SELECT permission was denied on the column 'SSN' of the object 'Membership', database 'hallincDW', schema 'dbo'.\nGO\n\n--row level security\n\n--run in master\nCREATE LOGIN Manager WITH PASSWORD = ''\nGO\nCREATE LOGIN Sales1 WITH PASSWORD = ''\nGO\nCREATE LOGIN Sales2 WITH PASSWORD = ''\nGO\n\n--run in master and your SQL pool database\nCREATE USER Manager FOR LOGIN Manager;  \nCREATE USER Sales1  FOR LOGIN Sales1;  \nCREATE USER Sales2  FOR LOGIN Sales2;\nGO\n\n--create table\nCREATE TABLE Sales  \n(  \n    OrderID int,  \n    SalesRep sysname,  \n    Product varchar(10),  \n    Qty int  \n);\n\nINSERT INTO Sales VALUES (1, 'Sales1', 'Valve', 5);\nINSERT INTO Sales VALUES (2, 'Sales1', 'Wheel', 2);\nINSERT INTO Sales VALUES (3, 'Sales1', 'Valve', 4);\nINSERT INTO Sales VALUES (4, 'Sales2', 'Bracket', 2);\nINSERT INTO Sales VALUES (5, 'Sales2', 'Wheel', 5);\nINSERT INTO Sales VALUES (6, 'Sales2', 'Seat', 5);\n\nSELECT * FROM Sales;\nGO\n\n--create external table\n\nCREATE MASTER KEY ENCRYPTION BY PASSWORD = '';\nCREATE DATABASE SCOPED CREDENTIAL msi_cred WITH IDENTITY = 'Managed Service Identity';\n\n--ext datasource\nCREATE EXTERNAL DATA SOURCE ext_datasource_with_abfss \nWITH \n(\n    TYPE = hadoop, LOCATION = 'abfss://hallinc@hallincdatalake.dfs.core.windows.net/external_source/', \n    CREDENTIAL = msi_cred\n);\n\n--external format\nCREATE EXTERNAL FILE FORMAT MSIFormat\nWITH\n(\n    FORMAT_TYPE=DELIMITEDTEXT\n);\n\n--external table\nCREATE EXTERNAL TABLE Sales_ext\nWITH\n(\n    LOCATION='Sales',\n    DATA_SOURCE=ext_datasource_with_abfss,\n    FILE_FORMAT=MSIFormat,\n    REJECT_TYPE=Percentage,\n    REJECT_SAMPLE_VALUE=100,\n    REJECT_VALUE=100\n)\nAS SELECT * FROM sales;\n\n--grant select\nGRANT SELECT ON Sales_ext TO Sales1;  \nGRANT SELECT ON Sales_ext TO Sales2;  \nGRANT SELECT ON Sales_ext TO Manager;\n\n--create schema\nCREATE SCHEMA Security;  \nGO  \n  \nCREATE FUNCTION Security.fn_securitypredicate(@SalesRep AS sysname)  \n    RETURNS TABLE  \nWITH SCHEMABINDING  \nAS  \n    RETURN SELECT 1 AS fn_securitypredicate_result\nWHERE @SalesRep = USER_NAME() OR USER_NAME() = 'Manager';  \nGO\n\n--security policy\nCREATE SECURITY POLICY SalesFilter_ext\nADD FILTER PREDICATE Security.fn_securitypredicate(SalesRep)\nON dbo.Sales_ext  \nWITH (STATE = ON);\n\n\n--clean up\nDROP USER Sales1;\nDROP USER Sales2;\nDROP USER Manager;\n\nDROP SECURITY POLICY SalesFilter_ext;\nDROP TABLE Sales;\nDROP EXTERNAL TABLE Sales_ext;\nDROP EXTERNAL DATA SOURCE ext_datasource_with_abfss ;\nDROP EXTERNAL FILE FORMAT MSIFormat;\nDROP DATABASE SCOPED CREDENTIAL msi_cred; \nDROP MASTER KEY;\n\nDROP LOGIN Sales1;\nDROP LOGIN Sales2;\nDROP LOGIN Manager;\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "hallincDW"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

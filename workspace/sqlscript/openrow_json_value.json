@@ -1,0 +1,20 @@
+{
+	"name": "openrow_json_value",
+	"properties": {
+		"folder": {
+			"name": "sql"
+		},
+		"content": {
+			"query": "SELECT JSON_VALUE(doc, '$.product_name') AS product,\n           JSON_VALUE(doc, '$.list_price') AS price\nFROM\n    OPENROWSET(\n        BULK 'https://hallincdatalake.dfs.core.windows.net/hallinc/raw/csv/products/*.json',\n        FORMAT = 'csv',\n        FIELDTERMINATOR ='0x0b',\n        FIELDQUOTE = '0x0b',\n        ROWTERMINATOR = '0x0b'\n    ) WITH (doc NVARCHAR(MAX)) as rows",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "MyBase",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

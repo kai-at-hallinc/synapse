@@ -1,0 +1,148 @@
+{
+	"name": "spark_with_plt",
+	"properties": {
+		"folder": {
+			"name": "notebooks"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "hallincspark",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "1ff27740-c0e4-460b-8a91-59ab6061bce6"
+			}
+		},
+		"metadata": {
+			"saveOutput": false,
+			"enableDebugMode": false,
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/a011ea95-c1fe-4125-9cef-82abcac7f740/resourceGroups/hallinc-rg/providers/Microsoft.Synapse/workspaces/hallinc-synapse/bigDataPools/hallincspark",
+				"name": "hallincspark",
+				"type": "Spark",
+				"endpoint": "https://hallinc-synapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/hallincspark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "python"
+					}
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"\r\n",
+					"# import data\r\n",
+					"df = spark.read.load('abfss://hallinc@hallincdatalake.dfs.core.windows.net/raw/csv/products/products.csv',\r\n",
+					"    format='csv',\r\n",
+					"    header=True\r\n",
+					")\r\n",
+					"\r\n",
+					"# create temp view\r\n",
+					"df.createOrReplaceTempView(\"products\")"
+				],
+				"execution_count": 19
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"# import plt\r\n",
+					"from matplotlib import pyplot as plt\r\n",
+					"\r\n",
+					"# create pandas frame\r\n",
+					"data = spark.sql(\r\n",
+					"    \"SELECT Category, COUNT(ProductID) AS ProductCount \\\r\n",
+					"    FROM products \\\r\n",
+					"    GROUP BY Category \\\r\n",
+					"    ORDER BY Category\") \\\r\n",
+					"    .toPandas()\r\n",
+					"# slice with iloc\r\n",
+					"display(\r\n",
+					"    data.iloc[0:3, :2]\r\n",
+					")"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# create charts with plt\r\n",
+					"\r\n",
+					"# clear the plot area\r\n",
+					"plt.clf()\r\n",
+					"\r\n",
+					"# create fig\r\n",
+					"fig = plt.figure(figsize=(9,6))\r\n",
+					"\r\n",
+					"# create bar chart\r\n",
+					"plt.bar(x=data['Category'], height=data['ProductCount'], color='blue')\r\n",
+					"\r\n",
+					"# fine tune the chart\r\n",
+					"plt.title('Products/Category')\r\n",
+					"plt.xlabel('Category')\r\n",
+					"plt.ylabel('Products')\r\n",
+					"plt.grid(\r\n",
+					"    color='#95a5a6',\r\n",
+					"    linestyle='--',\r\n",
+					"    linewidth=2,\r\n",
+					"    axis='y',\r\n",
+					"    alpha=0.7\r\n",
+					")\r\n",
+					"plt.xticks(rotation=70, fontsize=9) # make ticks readable\r\n",
+					"plt.tight_layout()\r\n",
+					"plt.show();"
+				],
+				"execution_count": 52
+			}
+		]
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"name": "cetas_sales",
+	"properties": {
+		"folder": {
+			"name": "sql"
+		},
+		"content": {
+			"query": "USE Sales;\n\nSELECT name, location FROM sys.external_data_sources;\n\n-- query datasource\nSELECT *\nFROM\n    OPENROWSET(\n        BULK '*.csv',\n        DATA_SOURCE = 'sales_data',\n        FORMAT = 'csv',\n        PARSER_VERSION = '2.0',\n        HEADER_ROW = TRUE\n    ) AS orders\nWHERE \n    SalesOrderLineNumber = 3\n    AND YEAR(OrderDate) = 2021\n;\n\n-- CETAS\nCREATE EXTERNAL TABLE Accessories\n    WITH (\n        -- details for storing results\n        LOCATION = 'special_orders/',\n        DATA_SOURCE = sales_files,\n        FILE_FORMAT = ParquetFormat\n    )\nAS\nSELECT SalesOrderNumber, CustomerName, Quantity\nFROM\n    OPENROWSET(\n        -- details for reading source files\n        BULK '*.csv',\n        DATA_SOURCE = 'sales_data',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0',\n        HEADER_ROW = TRUE\n    ) AS source_data\nWHERE SalesOrderLineNumber = 3;\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "Sales",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

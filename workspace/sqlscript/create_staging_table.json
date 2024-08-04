@@ -1,0 +1,20 @@
+{
+	"name": "create_staging_table",
+	"properties": {
+		"folder": {
+			"name": "sql"
+		},
+		"content": {
+			"query": "CREATE TABLE dbo.StageProduct\n(\n    ProductID NVARCHAR(10) NOT NULL,\n    ProductName NVARCHAR(200) NOT NULL,\n    ProductCategory NVARCHAR(200) NOT NULL,\n    ListPrice DECIMAL NOT NULL\n)\nWITH\n(\n    DISTRIBUTION = ROUND_ROBIN,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\nALTER TABLE dbo.DimProduct\nALTER COLUMN ListPrice NVARCHAR(10)\n;\nGO\n\nALTER TABLE dbo.DimProduct\nADD \n    Color VARCHAR (50),\n    Size VARCHAR (50),\n    Discontinued VARCHAR (50);\nGO\n\nALTER TABLE dbo.DimProduct\nALTER COLUMN ProductCategory VARCHAR(50) NULL;\nGO\n\nGO\n-- DROP TABLE dbo.StageProduct;\n\n-- Copy into staging table\nCOPY INTO dbo.StageProduct\n    (ProductID, ProductName, ProductCategory, ListPrice)\nFROM 'https://hallincdatalake.dfs.core.windows.net/hallinc/raw/csv/products/products.csv'\nWITH\n(\n    FILE_TYPE = 'CSV',\n    MAXERRORS = 0,\n    IDENTITY_INSERT = 'OFF'\n);\nGO\n\n  -- parquet format for input table files\n CREATE EXTERNAL FILE FORMAT ParquetFormat\n    WITH (\n        FORMAT_TYPE = PARQUET,\n        DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n    );\n GO\n\n--csv format for input table files\nCREATE EXTERNAL FILE FORMAT CsvFormat\nWITH (\n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = ',',\n        STRING_DELIMITER = '\"',\n        FIRST_ROW = 2\n    )\n);\n\n--create external datasource for products\nCREATE EXTERNAL DATA SOURCE products\nWITH (\n    LOCATION = 'abfss://hallinc@hallincdatalake.dfs.core.windows.net/raw/csv/products'\n);\n\nGO\n\n--create external table for as staging table\nCREATE EXTERNAL TABLE dbo.ExternalStageProduct\n (\n     ProductID NVARCHAR(10) NOT NULL,\n    ProductName NVARCHAR(200) NOT NULL,\n    ProductCategory NVARCHAR(200) NOT NULL,\n    ListPrice NVARCHAR(10) NOT NULL\n )\nWITH\n (\n    LOCATION = 'products.csv', --needs full file path\n    DATA_SOURCE = products,\n    FILE_FORMAT = CsvFormat\n );\nGO\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "hallincDW",
+				"poolName": "hallincDW"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

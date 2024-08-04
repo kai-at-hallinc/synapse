@@ -1,0 +1,12 @@
+{
+	"name": "hallinc_powerbi",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "PowerBIWorkspace",
+		"typeProperties": {
+			"workspaceID": "e7edf518-d553-4d92-abf7-9c2e4595fba5",
+			"tenantID": "375f0d00-5d9c-4f6b-9e6c-1f83fe706392"
+		}
+	}
+}

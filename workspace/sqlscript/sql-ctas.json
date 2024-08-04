@@ -1,0 +1,20 @@
+{
+	"name": "sql-ctas",
+	"properties": {
+		"folder": {
+			"name": "sql"
+		},
+		"content": {
+			"query": "CREATE TABLE dbo.DimProduct\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT ROW_NUMBER() OVER(ORDER BY ProductID) AS ProductKey,\n    ProductID as ProductAltKey,\n    ProductName,\n    ProductCategory,\n    ListPrice\nFROM dbo.StageProduct;\nGO\n\nSELECT * FROM dbo.DimProduct;\n\n--create stg table from git dimproduct\nCREATE EXTERNAL DATA SOURCE [YourExternalDataSource]\nWITH (\n    TYPE = HADOOP,\n    LOCATION = 'https://<your_storage_account>.dfs.core.windows.net/<container>',\n    CREDENTIAL = [YourCredential]\n);\n\nCREATE EXTERNAL FILE FORMAT [YourFileFormat]\nWITH (\n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = ',',\n        STRING_DELIMITER = '\"',\n        FIRST_ROW = 2\n    )\n);\n\nCREATE EXTERNAL TABLE [dbo].[YourExternalTable] (\n    Column1 INT,\n    Column2 NVARCHAR(50),\n    Column3 DATE\n)\nWITH (\n    LOCATION = '/path/to/your/file/',\n    DATA_SOURCE = [YourExternalDataSource],\n    FILE_FORMAT = [YourFileFormat]\n);\n--upsert Dimproduct\n\n\n--rename tables\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "hallincDW",
+				"poolName": "hallincDW"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

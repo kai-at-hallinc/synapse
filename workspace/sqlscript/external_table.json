@@ -1,0 +1,20 @@
+{
+	"name": "external_table",
+	"properties": {
+		"folder": {
+			"name": "sql"
+		},
+		"content": {
+			"query": "CREATE EXTERNAL FILE FORMAT CsvFormat\n    WITH (\n        FORMAT_TYPE = DELIMITEDTEXT,\n        FORMAT_OPTIONS(\n            FIELD_TERMINATOR = ',',\n            STRING_DELIMITER = '\"'\n        )\n    );\nGO\n\nCREATE EXTERNAL DATA SOURCE flightsCSV\nWITH (\n    LOCATION = 'abfss://hallinc@hallincdatalake.dfs.core.windows.net/raw/flights/'\n);\n\n\n--create external table\nCREATE EXTERNAL TABLE dbo.flights\n(\n    Year INT,\n    Month VARCHAR,\n    DayofMonth VARCHAR,\n    DayOfWeek VARCHAR,\n    Carrier VARCHAR,\n    OriginAirportID VARCHAR,\n    OriginAirportName VARCHAR,\n    OriginCity VARCHAR,\n    OriginState VARCHAR,\n    DestAirportID VARCHAR,\n    DestAirportName VARCHAR,\n    DestCity VARCHAR,\n    DestState VARCHAR,\n    CRSDepTime VARCHAR,\n    DepDelay VARCHAR,\n    DepDel15 VARCHAR,\n    CRSArrTime VARCHAR,\n    ArrDelay VARCHAR,\n    ArrDel15 VARCHAR,\n    Cancelled VARCHAR\n)\nWITH\n(\n    LOCATION = '*.csv',\n    DATA_SOURCE = flightsCSV,\n    FILE_FORMAT = CsvFormat\n);\nGO\n\n-- query the table\nSELECT * FROM dbo.flights;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "FlightDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

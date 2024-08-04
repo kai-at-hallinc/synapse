@@ -1,0 +1,20 @@
+{
+	"name": "create_external_table",
+	"properties": {
+		"folder": {
+			"name": "sql"
+		},
+		"content": {
+			"query": " -- Database for sales data\n CREATE DATABASE Sales\n   COLLATE Latin1_General_100_BIN2_UTF8;\n GO;\n\n Use Sales;\n GO;\n\n  -- create external data source\n CREATE EXTERNAL DATA SOURCE sales_data WITH (\n     LOCATION = 'https://hallincdatalake.dfs.core.windows.net/hallinc/raw/sales/csv/'\n );\n GO;\n\n  -- create external data destination\n CREATE EXTERNAL DATA SOURCE sales_files WITH (\n     LOCATION = 'https://hallincdatalake.dfs.core.windows.net/hallinc/raw/sales/'\n );\n GO;\n\n  -- Format for table files\n CREATE EXTERNAL FILE FORMAT ParquetFormat\n     WITH (\n             FORMAT_TYPE = PARQUET,\n             DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n         );\n GO;\n\n-- query external data\n SELECT Item AS Product,\n        SUM(Quantity) AS ItemsSold,\n        ROUND(SUM(UnitPrice) - SUM(TaxAmount), 2) AS NetRevenue\n FROM\n     OPENROWSET(\n         BULK '/*.csv',\n         DATA_SOURCE = 'sales_data',\n         FORMAT = 'CSV',\n         PARSER_VERSION = '2.0',\n         HEADER_ROW = TRUE\n     ) AS orders\n GROUP BY Item;\n GO;\n\n-- create external table\nCREATE EXTERNAL TABLE ProductSalesTotals\n     WITH (\n         LOCATION = 'ProductTotals/',\n         DATA_SOURCE = sales_files,\n         FILE_FORMAT = ParquetFormat -- output data format (external file format)\n     )\n AS\n SELECT Item AS Product,\n     SUM(Quantity) AS ItemsSold,\n     ROUND(SUM(UnitPrice) - SUM(TaxAmount), 2) AS NetRevenue\n FROM\n     OPENROWSET(\n         BULK '/*.csv',\n         DATA_SOURCE = 'sales_data', -- prefixed by external data source path\n         FORMAT = 'CSV',\n         PARSER_VERSION = '2.0',\n         HEADER_ROW = TRUE\n     ) AS orders\n GROUP BY Item;\n\n-- DROP EXTERNAL TABLE ProductSalesTotals;\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "Sales",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

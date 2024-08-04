@@ -1,0 +1,20 @@
+{
+	"name": "sql_query_cosmos",
+	"properties": {
+		"folder": {
+			"name": "sql"
+		},
+		"content": {
+			"query": "-- working solution\n\n\n--create cred\nCREATE CREDENTIAL cosmosdb\nWITH IDENTITY = 'SHARED ACCESS SIGNATURE',\nSECRET = '';\n\n-- query db\nSELECT *\nFROM OPENROWSET(PROVIDER = 'CosmosDB',\n                CONNECTION = 'Account=hallinc-cosmos;Database=HallincCosmosDB',\n                OBJECT = 'Sales',\n                SERVER_CREDENTIAL = 'cosmosdb'\n) AS products_data\n\n--select cols with schema\nSELECT *\nFROM OPENROWSET(PROVIDER = 'CosmosDB',\n                CONNECTION = 'Account=hallinc-cosmos;Database=HallincCosmosDB',\n                OBJECT = 'Sales',\n                SERVER_CREDENTIAL = 'cosmosdb'\n) \nWITH (\n    product VARCHAR(50),\n    price FLOAT\n ) AS products_data\n\n--nested query\nSELECT *\nFROM OPENROWSET(PROVIDER = 'CosmosDB',\n                CONNECTION = 'Account=hallinc-cosmos;Database=HallincCosmosDB',\n                OBJECT = 'Sales',\n                SERVER_CREDENTIAL = 'cosmosdb'\n) \nWITH (\n    customer VARCHAR (50) '$.customerdetails.customername',\n    product VARCHAR(50) '$.product',\n    price FLOAT '$.price'\n ) AS products_data \n\n\n--create view\n\n--db is needed first\nCREATE DATABASE sales_db\n   COLLATE Latin1_General_100_BIN2_UTF8\nGO;\n \nUSE sales_db;\nGO;\n\nCREATE VIEW products\nAS\nSELECT *\nFROM OPENROWSET(PROVIDER = 'CosmosDB',\n                CONNECTION = 'Account=hallinc-cosmos;Database=HallincCosmosDB',\n                OBJECT = 'Sales',\n                SERVER_CREDENTIAL = 'cosmosdb'\n) \nWITH (\n    customer VARCHAR (50) '$.customerdetails.customername',\n    product VARCHAR(50) '$.product',\n    price FLOAT '$.price'\n ) AS products_data\nGO\n\n-- query the view\nSELECT * FROM products;\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "sales_db",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

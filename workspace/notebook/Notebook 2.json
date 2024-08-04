@@ -1,0 +1,483 @@
+{
+	"name": "Notebook 2",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "hallincspark",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 1,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "true",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "fb584311-d502-4564-bc41-b1fae7505ece"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1",
+				"state": {
+					"59dedf6d-94e2-4bfc-976f-371eedafb304": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "626",
+										"1": "AW00011311",
+										"3": "Gabrielle",
+										"4": "D",
+										"5": "Lopez",
+										"6": "FALSE",
+										"7": "1975-02-21T00:00:00",
+										"8": "S",
+										"10": "F",
+										"11": "gabrielle63@adventure-works.com",
+										"12": "70000",
+										"13": "3",
+										"14": "0",
+										"15": "Graduate Degree",
+										"16": "Estudios de postgrado",
+										"17": "Bac + 3",
+										"18": "Management",
+										"19": "Gestión",
+										"20": "Direction",
+										"21": "0",
+										"22": "2",
+										"23": "8619 Parkside Dr.",
+										"25": "783-555-0174",
+										"26": "2019-09-19T00:00:00",
+										"27": "1-2 Miles"
+									},
+									{
+										"0": "118",
+										"1": "AW00011395",
+										"3": "Beth",
+										"4": "C",
+										"5": "Gutierrez",
+										"6": "FALSE",
+										"7": "1992-04-16T00:00:00",
+										"8": "S",
+										"10": "F",
+										"11": "beth13@adventure-works.com",
+										"12": "30000",
+										"13": "0",
+										"14": "0",
+										"15": "Bachelors",
+										"16": "Licenciatura",
+										"17": "Bac + 4",
+										"18": "Clerical",
+										"19": "Administrativo",
+										"20": "Employé",
+										"21": "1",
+										"22": "0",
+										"23": "Rehstr 1346",
+										"25": "1 (11) 500 555-0110",
+										"26": "2018-04-16T00:00:00",
+										"27": "0-1 Miles"
+									},
+									{
+										"0": "207",
+										"1": "AW00011471",
+										"3": "Latasha",
+										"5": "Suarez",
+										"6": "FALSE",
+										"7": "1995-03-25T00:00:00",
+										"8": "S",
+										"10": "F",
+										"11": "latasha19@adventure-works.com",
+										"12": "30000",
+										"13": "0",
+										"14": "0",
+										"15": "Partial College",
+										"16": "Estudios universitarios (en curso)",
+										"17": "Baccalauréat",
+										"18": "Clerical",
+										"19": "Administrativo",
+										"20": "Employé",
+										"21": "1",
+										"22": "1",
+										"23": "29, avenue de la Gare",
+										"25": "1 (11) 500 555-0180",
+										"26": "2019-10-18T00:00:00",
+										"27": "2-5 Miles"
+									},
+									{
+										"0": "201",
+										"1": "AW00011547",
+										"3": "Cindy",
+										"4": "E",
+										"5": "Sai",
+										"6": "FALSE",
+										"7": "1995-03-05T00:00:00",
+										"8": "M",
+										"10": "F",
+										"11": "cindy6@adventure-works.com",
+										"12": "40000",
+										"13": "0",
+										"14": "0",
+										"15": "Graduate Degree",
+										"16": "Estudios de postgrado",
+										"17": "Bac + 3",
+										"18": "Clerical",
+										"19": "Administrativo",
+										"20": "Employé",
+										"21": "1",
+										"22": "0",
+										"23": "88, allée des Princes",
+										"25": "1 (11) 500 555-0111",
+										"26": "2019-05-28T00:00:00",
+										"27": "0-1 Miles"
+									},
+									{
+										"0": "360",
+										"1": "AW00011626",
+										"3": "Destiny",
+										"5": "Rogers-James",
+										"6": "FALSE",
+										"7": "1994-12-12T00:00:00",
+										"8": "M",
+										"10": "F",
+										"11": "destinyrj26@adventure-works.com",
+										"12": "50000",
+										"13": "1",
+										"14": "0",
+										"15": "Graduate Degree",
+										"16": "Estudios de postgrado",
+										"17": "Bac + 3",
+										"18": "Skilled Manual",
+										"19": "Obrero especializado",
+										"20": "Technicien",
+										"21": "1",
+										"22": "0",
+										"23": "3588 Vancouver Way",
+										"25": "262-555-0170",
+										"26": "2018-02-01T00:00:00",
+										"27": "0-1 Miles"
+									},
+									{
+										"0": "385",
+										"1": "AW00011707",
+										"3": "Natalie",
+										"5": "Thompson",
+										"6": "FALSE",
+										"7": "1985-06-20T00:00:00",
+										"8": "S",
+										"10": "F",
+										"11": "natalie5@adventure-works.com",
+										"12": "60000",
+										"13": "4",
+										"14": "2",
+										"15": "Bachelors",
+										"16": "Licenciatura",
+										"17": "Bac + 4",
+										"18": "Professional",
+										"19": "Profesional",
+										"20": "Cadre",
+										"21": "1",
+										"22": "3",
+										"23": "1064 William Way",
+										"25": "468-555-0193",
+										"26": "2018-03-12T00:00:00",
+										"27": "0-1 Miles"
+									},
+									{
+										"0": "338",
+										"1": "AW00011788",
+										"3": "Destiny",
+										"4": "A",
+										"5": "Wood",
+										"6": "FALSE",
+										"7": "1993-08-18T00:00:00",
+										"8": "S",
+										"10": "F",
+										"11": "destinywd43@adventure-works.com",
+										"12": "70000",
+										"13": "1",
+										"14": "0",
+										"15": "Graduate Degree",
+										"16": "Estudios de postgrado",
+										"17": "Bac + 3",
+										"18": "Professional",
+										"19": "Profesional",
+										"20": "Cadre",
+										"21": "1",
+										"22": "0",
+										"23": "6538 Camelback Road",
+										"25": "913-555-5947",
+										"26": "2019-10-10T00:00:00",
+										"27": "2-5 Miles"
+									},
+									{
+										"0": "US",
+										"1": "AW99",
+										"3": "Billy",
+										"4": "L",
+										"5": "Jones",
+										"6": "FALSE",
+										"7": "Dec 12th 2001"
+									},
+									{
+										"0": "642",
+										"1": "AW00011864",
+										"3": "Elizabeth",
+										"4": "W",
+										"5": "Thompson",
+										"6": "FALSE",
+										"7": "1983-03-06T00:00:00",
+										"8": "M",
+										"10": "F",
+										"11": "elizabeth19@adventure-works.com",
+										"12": "60000",
+										"13": "1",
+										"14": "0",
+										"15": "Partial College",
+										"16": "Estudios universitarios (en curso)",
+										"17": "Baccalauréat",
+										"18": "Skilled Manual",
+										"19": "Obrero especializado",
+										"20": "Technicien",
+										"21": "1",
+										"22": "1",
+										"23": "5947 Encino Dr.",
+										"24": "Apt B",
+										"25": "465-555-0154",
+										"26": "2019-08-02T00:00:00",
+										"27": "2-5 Miles"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "GeographyKey",
+										"type": "string"
+									},
+									{
+										"key": "1",
+										"name": "CustomerAlternateKey",
+										"type": "string"
+									},
+									{
+										"key": "2",
+										"name": "Title",
+										"type": "string"
+									},
+									{
+										"key": "3",
+										"name": "FirstName",
+										"type": "string"
+									},
+									{
+										"key": "4",
+										"name": "MiddleName",
+										"type": "string"
+									},
+									{
+										"key": "5",
+										"name": "LastName",
+										"type": "string"
+									},
+									{
+										"key": "6",
+										"name": "NameStyle",
+										"type": "string"
+									},
+									{
+										"key": "7",
+										"name": "BirthDate",
+										"type": "string"
+									},
+									{
+										"key": "8",
+										"name": "MaritalStatus",
+										"type": "string"
+									},
+									{
+										"key": "9",
+										"name": "Suffix",
+										"type": "string"
+									},
+									{
+										"key": "10",
+										"name": "Gender",
+										"type": "string"
+									},
+									{
+										"key": "11",
+										"name": "EmailAddress",
+										"type": "string"
+									},
+									{
+										"key": "12",
+										"name": "YearlyIncome",
+										"type": "string"
+									},
+									{
+										"key": "13",
+										"name": "TotalChildren",
+										"type": "string"
+									},
+									{
+										"key": "14",
+										"name": "NumberChildrenAtHome",
+										"type": "string"
+									},
+									{
+										"key": "15",
+										"name": "EnglishEducation",
+										"type": "string"
+									},
+									{
+										"key": "16",
+										"name": "SpanishEducation",
+										"type": "string"
+									},
+									{
+										"key": "17",
+										"name": "FrenchEducation",
+										"type": "string"
+									},
+									{
+										"key": "18",
+										"name": "EnglishOccupation",
+										"type": "string"
+									},
+									{
+										"key": "19",
+										"name": "SpanishOccupation",
+										"type": "string"
+									},
+									{
+										"key": "20",
+										"name": "FrenchOccupation",
+										"type": "string"
+									},
+									{
+										"key": "21",
+										"name": "HouseOwnerFlag",
+										"type": "string"
+									},
+									{
+										"key": "22",
+										"name": "NumberCarsOwned",
+										"type": "string"
+									},
+									{
+										"key": "23",
+										"name": "AddressLine1",
+										"type": "string"
+									},
+									{
+										"key": "24",
+										"name": "AddressLine2",
+										"type": "string"
+									},
+									{
+										"key": "25",
+										"name": "Phone",
+										"type": "string"
+									},
+									{
+										"key": "26",
+										"name": "DateFirstPurchase",
+										"type": "string"
+									},
+									{
+										"key": "27",
+										"name": "CommuteDistance",
+										"type": "string"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala"
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "count",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"0"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					}
+				}
+			},
+			"enableDebugMode": false,
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/a011ea95-c1fe-4125-9cef-82abcac7f740/resourceGroups/hallinc-rg/providers/Microsoft.Synapse/workspaces/hallinc-synapse/bigDataPools/hallincspark",
+				"name": "hallincspark",
+				"type": "Spark",
+				"endpoint": "https://hallinc-synapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/hallincspark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "python"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"df = spark.read.load('abfss://hallinc@hallincdatalake.dfs.core.windows.net/raw/csv/customer/Customer.csv', format='csv', header=True\r\n",
+					")\r\n",
+					"display(df.limit(10))"
+				],
+				"execution_count": 2
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df.schema"
+				],
+				"execution_count": 3
+			}
+		]
+	}
+}
